@@ -9,7 +9,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Binder">
-        <activity android:name=".MainActivity">
+        <activity android:name=".ServerMainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -17,7 +17,7 @@
             </intent-filter>
         </activity>
         <service
-            android:name=".RemoteService"
+            android:name=".RemoteServiceUseAidl"
             android:enabled="true"
             android:exported="true" />
     </application>

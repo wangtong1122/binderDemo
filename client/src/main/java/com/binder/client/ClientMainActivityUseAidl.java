@@ -1,7 +1,5 @@
 package com.binder.client;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -15,19 +13,21 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-public class MainActivity extends AppCompatActivity {
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.binder.server.IShowMessageAidlInterface;
+
+public class ClientMainActivityUseAidl extends AppCompatActivity {
     private Button mSendString;
     private EditText mStingEditText;
-    private static final String DESCRIPTOR = "com.binder.server.RemoteServicea";
-    public static final int TRANSAVTION_showMessage = IBinder.FIRST_CALL_TRANSACTION;
-    private IBinder mServer;//服务端的Binder对象代理
+    private IShowMessageAidlInterface mServer;//服务端的Binder对象代理
     private boolean isConnection = false;
 
     private ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             isConnection = true;
-            mServer = service;
+            mServer = IShowMessageAidlInterface.Stub.asInterface(service);
             Log.d("Client"," onServiceConnected success");
         }
 
@@ -36,7 +36,11 @@ public class MainActivity extends AppCompatActivity {
             isConnection = false;
         }
     };
-
+    private void attemptToBindService() {
+        Intent intent = new Intent();
+        intent.setClassName("com.binder.server", "com.binder.server.RemoteServiceUseAidl");
+        bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,25 +54,11 @@ public class MainActivity extends AppCompatActivity {
                     attemptToBindService();
                     return;
                 }
-
-                Parcel data = Parcel.obtain();
-                Parcel replay = Parcel.obtain();
-                if (mServer != null) {
-                    try {
-                        data.writeInterfaceToken(DESCRIPTOR);
-                        data.writeString(mStingEditText.getText().toString());
-                        Log.d("Client"," mServer.transact call");
-                        mServer.transact(TRANSAVTION_showMessage, data, replay, 0);
-                        replay.readException();
-                    } catch (RemoteException e) {
-                        e.printStackTrace();
-                    } finally {
-                        replay.recycle();
-                        data.recycle();
-                    }
+                try {
+                    mServer.showMessage(mStingEditText.getText().toString());
+                } catch (RemoteException e) {
+                    e.printStackTrace();
                 }
-
-
             }
         });
     }
@@ -81,10 +71,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void attemptToBindService() {
-        Intent intent = new Intent();
-        intent.setClassName("com.binder.server", "com.binder.server.RemoteService");
-        bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
-    }
+
 
 }
