@@ -18,7 +18,7 @@ import android.widget.EditText;
 public class MainActivity extends AppCompatActivity {
     private Button mSendString;
     private EditText mStingEditText;
-    private static final String DESCRIPTOR = "com.binder.server.RemoteServicea";
+    private static final String DESCRIPTOR = "com.binder.server.RemoteService";
     public static final int TRANSAVTION_showMessage = IBinder.FIRST_CALL_TRANSACTION;
     private IBinder mServer;//服务端的Binder对象代理
     private boolean isConnection = false;
@@ -36,7 +36,11 @@ public class MainActivity extends AppCompatActivity {
             isConnection = false;
         }
     };
-
+    private void attemptToBindService() {
+        Intent intent = new Intent();
+        intent.setClassName("com.binder.server", "com.binder.server.RemoteService");
+        bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,10 +85,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void attemptToBindService() {
-        Intent intent = new Intent();
-        intent.setClassName("com.binder.server", "com.binder.server.RemoteService");
-        bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
-    }
+
 
 }

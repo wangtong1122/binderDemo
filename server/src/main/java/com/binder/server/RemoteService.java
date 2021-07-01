@@ -15,12 +15,9 @@ import androidx.annotation.Nullable;
 
 
 public class RemoteService extends Service {
-    private static final String DESCRIPTOR = "com.binder.server.RemoteServicea";
+    private static final String DESCRIPTOR = "com.binder.server.RemoteService";
     public static final int TRANSAVTION_showMessage = IBinder.FIRST_CALL_TRANSACTION;
     public static IReceiveMessageListener receiveMessageListener;
-
-
-
 
     @Nullable
     @Override
@@ -37,9 +34,6 @@ public class RemoteService extends Service {
         protected boolean onTransact(int code, @NonNull Parcel data, @Nullable Parcel reply, int flags) throws RemoteException {
 
             switch (code) {
-                case INTERFACE_TRANSACTION:
-                    reply.writeString(DESCRIPTOR);
-                    return true;
                 case TRANSAVTION_showMessage:
                     data.enforceInterface(DESCRIPTOR);
                     String message = data.readString();
